@@ -26,6 +26,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Clone posts from Database repo
+        run: |
+          rm -rf posts
+          git clone https://github.com/Tayhirro/Database.git posts
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
