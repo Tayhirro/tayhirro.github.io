@@ -3,27 +3,27 @@ export const themeConfig = {
   // 站点信息
   siteMeta: {
     // 站点标题
-    title: "九天之上",
+    title: "Tayhirro's Blog",
     // 站点描述
-    description: "基于 vitepress-theme-curve 搭建的 github pages 站点",
+    description: "用于记录生活的点滴",
     // 站点logo
     logo: "/images/logo/logo.webp",
     // 站点地址
-    site: "https://blog2.811520.xyz",
+    site: "https://tayhirro.github.io",
     // 语言
     lang: "zh-CN",
     // 作者
     author: {
-      name: "雨天狂奔",
+      name: "tayhirro",
       cover: "/images/logo/logo.webp",
-      email: "admin@24811213.xyz",
-      link: "https://daoyi.hidns.vip/#/",
+      email: "tayhirro@gmail.com",
+      link: "https://tayhirro.github.io",
     },
   },
   // 备案信息
-  icp: "鄂ICP备202411-001号",
+  icp: "",
   // 建站日期
-  since: "2024-11-1",
+  since: "2026-02-25",
   // 每页文章数据
   postSize: 8,
   // inject
@@ -40,7 +40,7 @@ export const themeConfig = {
           rel: "alternate",
           type: "application/rss+xml",
           title: "RSS",
-          href: "https://blog2.811520.xyz/rss.xml",
+          href: "https://tayhirro.github.io/rss.xml",
         },
       ],
       // 预载 CDN
@@ -123,7 +123,7 @@ export const themeConfig = {
       items: [
         { text: "技术分享", link: "/pages/categories/技术分享", icon: "technical" },
         { text: "我的项目", link: "/pages/project", icon: "code" },
-        { text: "收藏大全", link: "https://daoyi.hidns.vip/#/", icon: "tools" },
+        { text: "收藏大全", link: "/pages/project", icon: "tools" },
         { text: "工作备忘", link: "/pages/categories/工作备忘", icon: "people" },
         //{ text: "效率工具", link: "/pages/tools", icon: "tools" },
       ],
@@ -154,22 +154,7 @@ export const themeConfig = {
         {
           icon: "/images/logo/logo.webp",
           name: "博客主站",
-          url: "https://blog.811520.xyz/",
-        },
-        {
-          icon: "/images/logo/logo.webp",
-          name: "博客演示站",
-          url: "/",
-        },
-        {
-          icon: "/images/logo/logo.webp",
-          name: "个人主页",
-          url: "https://daoyi.hidns.vip/#/",
-        },
-        {
-          icon: "/images/logo/logo.webp",
-          name: "私有工具",
-          url: "https://blog.811520.xyz/tlink/",
+          url: "https://tayhirro.github.io/",
         },
       ],
     },
@@ -177,59 +162,9 @@ export const themeConfig = {
       name: "常用",
       list: [
         {
-          icon: "https://cover.ruom.top/favicon.ico",
-          name: "封面制作",
-          url: "https://cover.ruom.top/",
-        },
-        {
-          icon: "https://www.favicon.vip/get.php?url=img.ytian.us.kg",
-          name: "兰空图床",
-          url: "https://img.811520.xyz/",
-        },
-        {
-          icon: "https://pan.811520.xyz/2024-10/插入链接.webp",
-          name: "短链生成",
-          url: "https://slink.yuzong.nyc.mn/duanlian",  
-        },
-        {
-          icon: "https://ctool.dev/favicon.ico",
-          name: "开发工具",
-          url: "https://ctool.dev/",
-        },
-        {
-          icon: "https://suburl.v1.mk/favicon.ico",
-          name: "图片压缩",
-          url: "https://imgtool.v1.mk/",
-        },
-        {
           icon: "https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png",
           name: "博客仓库",
-          url: "https://github.com/yutian81/yutian81.github.io",
-        },
-      ],
-    },
-    {
-      name: "服务",
-      list: [
-        {
-          icon: "https://pan.811520.xyz/2024-11/1730875618-1730875614898.webp",
-          name: "今日热榜",
-          url: "https://hot.imsyy.top/",
-        },
-        {
-          icon: "https://rss.811520.xyz/favicon.ico",
-          name: "友圈后端",
-          url: "https://rss.811520.xyz/",
-        },
-        {
-          icon: "https://pan.811520.xyz/2024-11/1730634973-Cloudflare_Logo.webp",
-          name: "CF优选",
-          url: "https://blog2.811520.xyz/blogrss/",
-        },
-        {
-          icon: "https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png",
-          name: "Serv00",
-          url: "https://github.com/yutian81/serv00-ct8-ssh",
+          url: "https://github.com/Tayhirro/tayhirro.github.io",
         },
       ],
     },
@@ -257,19 +192,11 @@ export const themeConfig = {
     social: [
       {
         icon: "email",
-        link: "mailto:admin@24811213.xyz",
+        link: "mailto:tayhirro@gmail.com",
       },
       {
         icon: "github",
-        link: "https://github.com/yutian81/",
-      },
-      {
-        icon: "telegram",
-        link: "https://t.me/yutian88881",
-      },
-      {
-        icon: "bilibili",
-        link: "https://space.bilibili.com/677845115",
+        link: "https://github.com/Tayhirro/",
       },
     ],
     // sitemap
@@ -284,56 +211,25 @@ export const themeConfig = {
         ],
       },
       {
-        text: "云端平台",
-        items: [
-          { text: "Vercel", link: "https://vercel.com/", newTab: true },
-          { text: "NorthFlank", link: "https://app.northflank.com/", newTab: true },
-          { text: "Koyeb", link: "https://app.koyeb.com/", newTab: true },
-          { text: "Huawei", link: "https://www.huaweicloud.com/intl/zh-cn/", newTab: true },
-        ],
-      },
-      {
-        text: "我的专栏",
-        items: [
-          { text: "技术分享", link: "/pages/categories/技术分享" },
-          { text: "我的项目", link: "/pages/project" },
-          { text: "收藏大全", link: "https://daoyi.hidns.vip/#/", newTab: true },
-          { text: "工作备忘", link: "/pages/categories/工作备忘" },
-        ],
-      },
-      {
-        text: "项目推荐",
-        items: [
-          { text: "edgetunnel", link: "https://github.com/cmliu/edgetunnel", newTab: true },
-          { text: "twikoo", link: "https://github.com/yutian81/twikoo", newTab: true },
-          { text: "alist", link: "https://alist.nn.ci/zh/", newTab: true },
-          { text: "nezha", link: "https://nezha.wiki/guide/dashboard.html", newTab: true },
-        ],
-      }, 
-      {        
         text: "页面导航",
         items: [
-          //{ text: "畅所欲言", link: "/pages/message" },
           { text: "关于本站", link: "/pages/about" },
           { text: "隐私政策", link: "/pages/privacy" },
           { text: "版权协议", link: "/pages/cc" },
-          { text: "致谢名单", link: "/pages/thanks" },
         ],
       },
       {
         text: "网站服务",
         items: [
-          { text: "音乐时刻", link: "https://blog.811520.xyz/music/", newTab: true },
-          { text: "站点状态", link: "https://uptime.ytian.us.kg/status/service", newTab: true },
-          { text: "站点订阅", link: "https://blog2.811520.xyz/rss.xml", newTab: true },
-          { text: "问题反馈", link: "https://github.com/yutian81/yutian81.github.io/issues", newTab: true, },
+          { text: "站点订阅", link: "https://tayhirro.github.io/rss.xml", newTab: true },
+          { text: "问题反馈", link: "https://github.com/Tayhirro/tayhirro.github.io/issues", newTab: true },
         ],
       },
     ],
   },
   // 评论
   comment: {
-    enable: true,
+    enable: false,
     // 评论系统选择
     // artalk / twikoo
     type: "twikoo",
@@ -346,10 +242,8 @@ export const themeConfig = {
     // twikoo
     // https://twikoo.js.org/
     twikoo: {
-      // 必填，若不想使用 CDN，可以使用 pnpm add twikoo 安装并引入
-      js: "https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twikoo/1.6.39/twikoo.all.min.js",
-      envId: "https://twikoo.24811213.xyz/",
-      // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
+      js: "",
+      envId: "",
       region: "",
       lang: "zh-CN",
     },
@@ -359,7 +253,7 @@ export const themeConfig = {
     // 站点简介
     hello: {
       enable: true,
-      text: "这里有我的各种<strong>折腾笔记</strong>，也有一些<strong>工作备忘</strong>和<strong>生活随笔</strong>。又菜又爱玩，<strong>万事都不难</strong>。",
+      text: "这里是 <strong>tayhirro</strong> 的个人博客，用于<strong>记录生活的点滴</strong>。",
     },
     // 目录
     toc: {
@@ -386,7 +280,7 @@ export const themeConfig = {
   // 友链
   friends: {
     // 友链朋友圈
-    circleOfFriends: "https://blog2.811520.xyz/blogrss/",
+    circleOfFriends: "",
     // 动态友链
     dynamicLink: {
       server: "",
@@ -410,18 +304,18 @@ export const themeConfig = {
   // 搜索
   // https://www.algolia.com/
   search: {
-    enable: true,
-    appId: "J8AAAZLZZ7",
-    apiKey: "94c1d72ea8e1533fc67c3e7244c7e196",
-    indexName: "daoyi-wiki",
+    enable: false,
+    appId: "",
+    apiKey: "",
+    indexName: "",
   },
   // 打赏
   rewardData: {
-    enable: true,
+    enable: false,
     // 微信二维码
-    wechat: "https://pan.811520.xyz/2024-11/1730603920-wechatpay.webp",
+    wechat: "",
     // 支付宝二维码
-    alipay: "https://pan.811520.xyz/2024-11/1730603921-alipay.webp",
+    alipay: "",
   },
   // 图片灯箱
   fancybox: {
@@ -454,6 +348,6 @@ export const themeConfig = {
   },
   // 站点统计
   tongji: {
-    "51la": "3LlkSubt2HvotYRj",
+    "51la": "",
   },
 };
