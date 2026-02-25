@@ -110,7 +110,6 @@ export default withPwa(
     },
     // markdown
     markdown: {
-      html: false,
       math: true,
       lineNumbers: true,
       toc: { level: [1, 2, 3] },
@@ -161,6 +160,8 @@ export default withPwa(
           enforce: "pre",
           transform(code, id) {
             if (!id.endsWith(".md")) return;
+            // 只处理 posts/ 目录下的文件，不影响 pages/ 等包含 Vue 组件的 md
+            if (!id.replace(/\\/g, "/").includes("/posts/")) return;
             let result = code;
 
             // 替换 markdown 图片语法中的本地路径 ![alt](C:\...)
