@@ -189,7 +189,7 @@ export default withPwa(
             let inMathBlock = false;
 
             for (let i = 0; i < lines.length; i++) {
-              const trimmed = lines[i].trimStart();
+              const trimmed = lines[i].trim();
 
               // 跟踪 YAML frontmatter
               if (i === 0 && trimmed === "---") {
