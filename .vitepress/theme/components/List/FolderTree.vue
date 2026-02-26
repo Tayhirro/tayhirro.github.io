@@ -18,7 +18,7 @@
     </div>
 
     <!-- 当前层级的文件夹和索引 -->
-    <div v-if="currentLevelData" class="current-level">
+    <div class="current-level">
       <!-- 子文件夹列表 -->
       <div v-if="currentLevelData.folders.length > 0" class="folders-section">
         <h3 class="section-title">
@@ -154,7 +154,9 @@ const parseIndexContent = (indexPost) => {
 }
 
 const currentLevelData = computed(() => {
-  if (!props.categoryName) return null
+  if (!props.categoryName) {
+    return { folders: [], indexes: [] }
+  }
   
   const category = props.categoryName
   const indexFile = findIndexFile(category)
