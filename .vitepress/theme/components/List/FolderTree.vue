@@ -116,10 +116,9 @@ const currentLevelData = computed(() => {
   
   const category = props.categoryName
   const posts = props.postData.filter(post => {
-    const id = post?.id
-    if (typeof id !== 'string') return false
-    if (!id.startsWith('posts/')) return false
-    const postPath = id.substring(6).replace('.md', '')
+    const path = post?.regularPath
+    if (typeof path !== 'string') return false
+    const postPath = path.replace(/^\//, '').replace('.html', '')
     return postPath.startsWith(category + '/') || postPath === category
   })
   
@@ -127,9 +126,9 @@ const currentLevelData = computed(() => {
   const indexes = []
   
   posts.forEach(post => {
-    const id = post?.id
-    if (typeof id !== 'string') return
-    const postPath = id.substring(6).replace('.md', '')
+    const path = post?.regularPath
+    if (typeof path !== 'string') return
+    const postPath = path.replace(/^\//, '').replace('.html', '')
     const relativePath = postPath.substring(category.length + 1)
     
     if (!relativePath) {
