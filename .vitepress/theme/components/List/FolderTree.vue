@@ -77,7 +77,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRoute } from 'vitepress'
 
+const route = useRoute()
 const props = defineProps({
   categoryName: {
     type: String,
@@ -93,6 +95,14 @@ const props = defineProps({
   }
 })
 
+const currentCategory = computed(() => {
+  const match = route.path.match(/\/pages\/categories\/(.+)/)
+  if (match) {
+    return decodeURIComponent(match[1])
+  }
+  return props.categoryName
+})
+
 const formatDate = (timestamp) => {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -100,8 +110,8 @@ const formatDate = (timestamp) => {
 }
 
 const breadcrumbs = computed(() => {
-  if (!props.categoryName) return []
-  const parts = props.categoryName.split('/')
+  if (!currentCategory.value) return []
+  const parts = currentCategory.value.split('/')
   let path = ''
   return parts.map((part, index) => {
     path += index === 0 ? part : '/' + part
@@ -154,11 +164,11 @@ const parseIndexContent = (indexPost) => {
 }
 
 const currentLevelData = computed(() => {
-  if (!props.categoryName) {
+  const category = currentCategory.value
+  if (!category) {
     return { folders: [], indexes: [] }
   }
   
-  const category = props.categoryName
   const indexFile = findIndexFile(category)
   
   if (indexFile) {
