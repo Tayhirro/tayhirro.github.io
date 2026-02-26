@@ -128,6 +128,14 @@ export default withPwa(
       "posts/shipany-rich-editor/**",
       "posts/silicon-rider-bench/**",
       "posts/SpringBoot-Notes/**",
+      // 模板和说明类文件
+      "posts/**/_TEMPLATE.md",
+      "posts/**/*_TEMPLATE.md",
+      "posts/**/未命名*.md",
+      "posts/2026-01-12.md",
+      "posts/DeepSeek-R1.md",
+      "posts/OpenAI-o1.md",
+      "posts/曹植-送应氏.md",
     ],
     // transformHead
     transformPageData: async (pageData) => {
