@@ -1,10 +1,11 @@
 ---
 title: 全部分类
 aside: false
+padding: false
 ---
 
 <script setup>
-import CatOrTag from "@/views/CatOrTag.vue"
+import CategoryIndex from "@/components/List/CategoryIndex.vue"
 </script>
 
-<CatOrTag />
+<CategoryIndex />
