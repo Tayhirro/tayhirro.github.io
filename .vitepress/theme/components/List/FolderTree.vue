@@ -18,35 +18,36 @@
     </div>
 
     <!-- 当前层级的文件夹和索引 -->
-    <div v-if="currentLevelData" class="current-level">
+    <div v-if="displayData" class="current-level">
       <!-- 子文件夹列表 -->
-      <div v-if="currentLevelData.folders.length > 0" class="folders-section">
+      <div v-if="displayData.folders.length > 0" class="folders-section">
         <h3 class="section-title">
           <i class="iconfont icon-folder"></i>
           子文件夹
         </h3>
         <div class="folder-grid">
           <a
-            v-for="folder in currentLevelData.folders"
+            v-for="folder in displayData.folders"
             :key="folder.name"
-            :href="`/pages/categories/${folder.path}`"
+            :href="folder.link"
             class="folder-card s-card hover"
           >
             <i class="iconfont icon-folder"></i>
             <span class="folder-name">{{ folder.name }}</span>
+            <span class="folder-desc" v-if="folder.desc">{{ folder.desc }}</span>
           </a>
         </div>
       </div>
 
       <!-- 索引文件列表 -->
-      <div v-if="currentLevelData.indexes.length > 0" class="indexes-section">
+      <div v-if="displayData.indexes.length > 0" class="indexes-section">
         <h3 class="section-title">
           <i class="iconfont icon-article"></i>
           索引文档
         </h3>
         <div class="post-grid">
           <a
-            v-for="post in currentLevelData.indexes"
+            v-for="post in displayData.indexes"
             :key="post.regularPath"
             :href="post.regularPath"
             class="post-card s-card hover"
@@ -66,7 +67,7 @@
       </div>
 
       <!-- 空状态 -->
-      <div v-if="currentLevelData.folders.length === 0 && currentLevelData.indexes.length === 0" class="empty-state">
+      <div v-if="displayData.folders.length === 0 && displayData.indexes.length === 0" class="empty-state">
         <i class="iconfont icon-empty"></i>
         <p>该分类下暂无内容</p>
       </div>
@@ -75,8 +76,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute } from 'vitepress'
 
+const route = useRoute()
 const props = defineProps({
   categoryName: {
     type: String,
@@ -92,6 +95,17 @@ const props = defineProps({
   }
 })
 
+const currentCategory = ref(props.categoryName)
+
+watch(() => route.path, () => {
+  const match = route.path.match(/\/pages\/categories\/(.+)/)
+  if (match) {
+    currentCategory.value = decodeURIComponent(match[1])
+  } else {
+    currentCategory.value = ''
+  }
+}, { immediate: true })
+
 const formatDate = (timestamp) => {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -99,8 +113,8 @@ const formatDate = (timestamp) => {
 }
 
 const breadcrumbs = computed(() => {
-  if (!props.categoryName) return []
-  const parts = props.categoryName.split('/')
+  if (!currentCategory.value) return []
+  const parts = currentCategory.value.split('/')
   let path = ''
   return parts.map((part, index) => {
     path += index === 0 ? part : '/' + part
@@ -111,10 +125,60 @@ const breadcrumbs = computed(() => {
   })
 })
 
-const currentLevelData = computed(() => {
-  if (!props.categoryName) return null
+const findIndexFile = (category) => {
+  return props.postData.find(post => {
+    const path = post?.regularPath
+    if (!path) return false
+    const postPath = path.replace(/^\//, '').replace('.html', '')
+    const targetPath = category + '/索引' 
+    const targetPath2 = category + '/index'
+    const targetPath3 = category + '/README'
+    return postPath === targetPath || postPath === targetPath2 || postPath === targetPath3
+  })
+}
+
+const parseIndexContent = (indexPost) => {
+  if (!indexPost || !indexPost.description) return { folders: [], indexes: [] }
   
-  const category = props.categoryName
+  const desc = indexPost.description
+  const folders = []
+  const indexes = []
+  
+  const linkRegex = /\[([^\]]+)\]\(([^)]+\.md)\)/g
+  let match
+  
+  while ((match = linkRegex.exec(desc)) !== null) {
+    const name = match[1]
+    const link = match[2]
+    
+    if (link.includes('/')) {
+      const folderName = link.split('/')[0]
+      if (!folders.find(f => f.name === folderName)) {
+        folders.push({
+          name: folderName,
+          link: `/${props.postData[0]?.regularPath?.split('/')[1] || 'posts'}/${link}`,
+          desc: name
+        })
+      }
+    }
+  }
+  
+  return { folders, indexes }
+}
+
+const currentLevelData = computed(() => {
+  if (!currentCategory.value) return null
+  
+  const category = currentCategory.value
+  const indexFile = findIndexFile(category)
+  
+  if (indexFile) {
+    const parsed = parseIndexContent(indexFile)
+    if (parsed.folders.length > 0 || parsed.indexes.length > 0) {
+      return parsed
+    }
+  }
+  
   const posts = props.postData.filter(post => {
     const path = post?.regularPath
     if (typeof path !== 'string') return false
@@ -140,16 +204,26 @@ const currentLevelData = computed(() => {
     if (parts.length === 1) {
       const fileName = parts[0]
       if (fileName.includes('索引') || fileName.includes('index') || fileName === 'README') {
-        indexes.unshift(post)
+        if (!indexes.find(i => i.regularPath === post.regularPath)) {
+          indexes.unshift(post)
+        }
       } else {
-        indexes.push(post)
+        if (!indexes.find(i => i.regularPath === post.regularPath)) {
+          indexes.push(post)
+        }
       }
     } else if (parts.length > 1) {
       const firstFolder = parts[0]
       if (!folders.has(firstFolder)) {
+        const folderPath = `${category}/${firstFolder}`
+        const folderIndex = posts.find(p => {
+          const pPath = p?.regularPath?.replace(/^\//, '').replace('.html', '')
+          return pPath === folderPath + '/索引' || pPath === folderPath + '/index' || pPath === folderPath + '/README'
+        })
         folders.set(firstFolder, {
           name: firstFolder,
-          path: `${category}/${firstFolder}`
+          link: `/pages/categories/${folderPath}`,
+          desc: folderIndex?.title || ''
         })
       }
     }
@@ -159,6 +233,11 @@ const currentLevelData = computed(() => {
     folders: Array.from(folders.values()),
     indexes: indexes
   }
+})
+
+const displayData = computed(() => {
+  if (!currentCategory.value) return null
+  return currentLevelData.value
 })
 </script>
 
@@ -221,13 +300,13 @@ const currentLevelData = computed(() => {
     
     .folder-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
       
       .folder-card {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        flex-direction: column;
+        gap: 8px;
         padding: 16px;
         border-radius: 12px;
         transition: all 0.3s;
@@ -240,6 +319,15 @@ const currentLevelData = computed(() => {
         .folder-name {
           font-weight: 500;
           color: var(--main-font-color);
+        }
+        
+        .folder-desc {
+          font-size: 12px;
+          color: var(--main-font-second-color);
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         
         &:hover {
