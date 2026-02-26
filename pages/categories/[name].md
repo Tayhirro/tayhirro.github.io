@@ -5,26 +5,31 @@ padding: false
 ---
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
-import { useData } from "vitepress"
+import { onMounted, computed } from "vue";
+import { useData, useRoute } from "vitepress"
 import Home from "@/views/Home.vue"
 import FolderTree from "@/components/List/FolderTree.vue"
 
-const { params, site, theme } = useData();
+const route = useRoute()
+const { site, theme } = useData();
 
 const categoryName = computed(() => {
-  return params.value.name ? decodeURIComponent(params.value.name) : ''
+  const name = route.params?.name
+  return name ? decodeURIComponent(name) : ''
 })
 
 onMounted(() => {
-  document.title = `分类：${params.value.name} | ${site.value.title}`;
+  const name = route.params?.name
+  if (name) {
+    document.title = `分类：${name} | ${site.value.title}`;
+  }
 });
 </script>
 
 <template>
   <div class="category-page">
     <FolderTree v-if="categoryName" :categoryName="categoryName" :postData="theme.postData" :categoriesData="theme.categoriesData" />
-    <Home :showHeader="false" :showCategories="params.name" />
+    <Home :showHeader="false" :showCategories="route.params?.name" />
   </div>
 </template>
 
