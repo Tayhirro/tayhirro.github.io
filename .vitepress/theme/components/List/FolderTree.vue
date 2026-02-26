@@ -18,16 +18,16 @@
     </div>
 
     <!-- 当前层级的文件夹和索引 -->
-    <div v-if="displayData" class="current-level">
+    <div v-if="currentLevelData" class="current-level">
       <!-- 子文件夹列表 -->
-      <div v-if="displayData.folders.length > 0" class="folders-section">
+      <div v-if="currentLevelData.folders.length > 0" class="folders-section">
         <h3 class="section-title">
           <i class="iconfont icon-folder"></i>
           子文件夹
         </h3>
         <div class="folder-grid">
           <a
-            v-for="folder in displayData.folders"
+            v-for="folder in currentLevelData.folders"
             :key="folder.name"
             :href="folder.link"
             class="folder-card s-card hover"
@@ -40,14 +40,14 @@
       </div>
 
       <!-- 索引文件列表 -->
-      <div v-if="displayData.indexes.length > 0" class="indexes-section">
+      <div v-if="currentLevelData.indexes.length > 0" class="indexes-section">
         <h3 class="section-title">
           <i class="iconfont icon-article"></i>
           索引文档
         </h3>
         <div class="post-grid">
           <a
-            v-for="post in displayData.indexes"
+            v-for="post in currentLevelData.indexes"
             :key="post.regularPath"
             :href="post.regularPath"
             class="post-card s-card hover"
@@ -67,7 +67,7 @@
       </div>
 
       <!-- 空状态 -->
-      <div v-if="displayData.folders.length === 0 && displayData.indexes.length === 0" class="empty-state">
+      <div v-if="currentLevelData.folders.length === 0 && currentLevelData.indexes.length === 0" class="empty-state">
         <i class="iconfont icon-empty"></i>
         <p>该分类下暂无内容</p>
       </div>
@@ -76,10 +76,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute } from 'vitepress'
+import { computed } from 'vue'
 
-const route = useRoute()
 const props = defineProps({
   categoryName: {
     type: String,
@@ -95,17 +93,6 @@ const props = defineProps({
   }
 })
 
-const currentCategory = ref(props.categoryName)
-
-watch(() => route.path, () => {
-  const match = route.path.match(/\/pages\/categories\/(.+)/)
-  if (match) {
-    currentCategory.value = decodeURIComponent(match[1])
-  } else {
-    currentCategory.value = ''
-  }
-}, { immediate: true })
-
 const formatDate = (timestamp) => {
   if (!timestamp) return ''
   const date = new Date(timestamp)
@@ -113,8 +100,8 @@ const formatDate = (timestamp) => {
 }
 
 const breadcrumbs = computed(() => {
-  if (!currentCategory.value) return []
-  const parts = currentCategory.value.split('/')
+  if (!props.categoryName) return []
+  const parts = props.categoryName.split('/')
   let path = ''
   return parts.map((part, index) => {
     path += index === 0 ? part : '/' + part
@@ -167,9 +154,9 @@ const parseIndexContent = (indexPost) => {
 }
 
 const currentLevelData = computed(() => {
-  if (!currentCategory.value) return null
+  if (!props.categoryName) return null
   
-  const category = currentCategory.value
+  const category = props.categoryName
   const indexFile = findIndexFile(category)
   
   if (indexFile) {
@@ -233,11 +220,6 @@ const currentLevelData = computed(() => {
     folders: Array.from(folders.values()),
     indexes: indexes
   }
-})
-
-const displayData = computed(() => {
-  if (!currentCategory.value) return null
-  return currentLevelData.value
 })
 </script>
 
