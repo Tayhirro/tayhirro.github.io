@@ -16,10 +16,6 @@ const categoryName = computed(() => {
   return params.value.name ? decodeURIComponent(params.value.name) : ''
 })
 
-watch(() => params.value.name, (newVal) => {
-  console.log('params changed:', newVal)
-})
-
 onMounted(() => {
   if (params.value.name) {
     document.title = `分类：${params.value.name} | ${site.value.title}`;
@@ -27,12 +23,10 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <div class="category-page">
-    <FolderTree :categoryName="categoryName" :postData="theme.postData" :categoriesData="theme.categoriesData" />
-    <Home :showHeader="false" :showCategories="params.name" />
-  </div>
-</template>
+<div class="category-page">
+  <FolderTree :categoryName="categoryName" :postData="theme.postData" :categoriesData="theme.categoriesData" />
+  <Home :showHeader="false" :showCategories="params.name" />
+</div>
 
 <style scoped>
 .category-page {
