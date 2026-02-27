@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  repository_dispatch:
+    types: [database_updated]
+
 
 # 设置 GITHUB_TOKEN 权限
 permissions:
