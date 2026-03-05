@@ -32,11 +32,11 @@
       <div class="other-meta">
         <span class="meta date">
           <i class="iconfont icon-date" />
-          {{ formatTimestamp(postMetaData.date) }}
+          {{ formatPreciseTimestamp(postMetaData.date) }}
         </span>
         <span class="update meta">
           <i class="iconfont icon-time" />
-          {{ formatTimestamp(page?.lastUpdated || postMetaData.lastModified) }}
+          {{ formatPreciseTimestamp(page?.lastUpdated || postMetaData.lastModified) }}
         </span>
         <!-- 热度 -->
         <span class="hot meta">
@@ -100,11 +100,17 @@
 </template>
 
 <script setup>
-import { formatTimestamp } from "@/utils/helper";
 import { generateId } from "@/utils/commonTools";
 import initFancybox from "@/utils/initFancybox";
 
 const { page, theme, frontmatter } = useData();
+
+const formatPreciseTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
 
 // 评论元素
 const commentRef = ref(null);
