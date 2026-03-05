@@ -122,40 +122,76 @@ const breadcrumbs = computed(() => {
   })
 })
 
+const normalizePath = (path) => {
+  if (typeof path !== 'string') return ''
+  let value = decodeURIComponent(path).replace(/\\/g, '/')
+  value = value.replace(/^\//, '').replace(/\.html$/, '').replace(/\.md$/, '')
+  value = value.replace(/^posts\//, '')
+  return value
+}
+
+const getCategoryPosts = (category) => {
+  const byCategory = props.categoriesData?.[category]?.articles
+  if (Array.isArray(byCategory) && byCategory.length > 0) {
+    return byCategory
+  }
+  return props.postData.filter((post) => normalizePath(post?.regularPath).startsWith(`${category}/`))
+}
+
 const findIndexFile = (category) => {
-  return props.postData.find(post => {
-    const path = post?.regularPath
-    if (!path) return false
-    const postPath = path.replace(/^\//, '').replace('.html', '')
-    const targetPath = category + '/索引' 
-    const targetPath2 = category + '/index'
-    const targetPath3 = category + '/README'
-    return postPath === targetPath || postPath === targetPath2 || postPath === targetPath3
+  const posts = getCategoryPosts(category)
+  const candidates = new Set([
+    `${category}/索引`,
+    `${category}/index`,
+    `${category}/README`,
+    `${category}/${category.split('/').pop()}索引`,
+  ])
+  return posts.find((post) => {
+    const postPath = normalizePath(post?.regularPath)
+    return candidates.has(postPath)
   })
 }
 
-const parseIndexContent = (indexPost) => {
-  if (!indexPost || !indexPost.description) return { folders: [], indexes: [] }
-  
-  const desc = indexPost.description
+const parseIndexContent = (indexPost, category) => {
+  const text = indexPost?.content || indexPost?.description || ''
+  if (!text) return { folders: [], indexes: [] }
+
   const folders = []
   const indexes = []
+  const seenFolders = new Set()
+  const seenIndexes = new Set()
+  const postByPath = new Map()
+
+  props.postData.forEach((post) => {
+    postByPath.set(normalizePath(post?.regularPath), post)
+  })
   
   const linkRegex = /\[([^\]]+)\]\(([^)]+\.md)\)/g
   let match
   
-  while ((match = linkRegex.exec(desc)) !== null) {
+  while ((match = linkRegex.exec(text)) !== null) {
     const name = match[1]
-    const link = match[2]
+    const link = decodeURIComponent(match[2]).trim()
+    if (!link || link.startsWith('http://') || link.startsWith('https://')) continue
+
+    const cleanLink = link.replace(/^\.\//, '').replace(/\.md$/, '')
     
-    if (link.includes('/')) {
-      const folderName = link.split('/')[0]
-      if (!folders.find(f => f.name === folderName)) {
+    if (cleanLink.includes('/')) {
+      const folderName = cleanLink.split('/')[0]
+      if (!seenFolders.has(folderName)) {
+        seenFolders.add(folderName)
         folders.push({
           name: folderName,
-          link: `/${props.postData[0]?.regularPath?.split('/')[1] || 'posts'}/${link}`,
+          link: `/pages/categories/${category}/${folderName}`,
           desc: name
         })
+      }
+    } else {
+      const targetPath = normalizePath(`${category}/${cleanLink}`)
+      const post = postByPath.get(targetPath)
+      if (post && !seenIndexes.has(post.regularPath)) {
+        seenIndexes.add(post.regularPath)
+        indexes.push(post)
       }
     }
   }
@@ -172,27 +208,23 @@ const currentLevelData = computed(() => {
   const indexFile = findIndexFile(category)
   
   if (indexFile) {
-    const parsed = parseIndexContent(indexFile)
+    const parsed = parseIndexContent(indexFile, category)
     if (parsed.folders.length > 0 || parsed.indexes.length > 0) {
       return parsed
     }
   }
-  
-  const posts = props.postData.filter(post => {
-    const path = post?.regularPath
-    if (typeof path !== 'string') return false
-    const postPath = path.replace(/^\//, '').replace('.html', '')
-    return postPath.startsWith(category + '/') || postPath === category
-  })
+
+  const posts = getCategoryPosts(category)
   
   const folders = new Map()
   const indexes = []
   
   posts.forEach(post => {
-    const path = post?.regularPath
-    if (typeof path !== 'string') return
-    const postPath = path.replace(/^\//, '').replace('.html', '')
-    const relativePath = postPath.substring(category.length + 1)
+    const postPath = normalizePath(post?.regularPath)
+    if (!postPath) return
+    const categoryPath = normalizePath(category)
+    if (!postPath.startsWith(`${categoryPath}/`)) return
+    const relativePath = postPath.substring(categoryPath.length + 1)
     
     if (!relativePath) {
       return

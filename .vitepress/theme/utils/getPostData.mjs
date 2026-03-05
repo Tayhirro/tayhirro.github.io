@@ -59,8 +59,8 @@ export const getAllPosts = async () => {
           // 获取文件创建时间和最后修改时间
           const { birthtimeMs, mtimeMs } = stat;
           // 解析 front matter
-          const { data } = matter(content);
-          const { title, date, categories, description, tags, top, cover } = data;
+          const { data, content: body } = matter(content);
+          const { title, date, categories, description, tags, top, cover, type } = data;
           // 计算文章的过期天数
           const expired = Math.floor(
             (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24),
@@ -75,6 +75,8 @@ export const getAllPosts = async () => {
             tags,
             categories,
             description,
+            type,
+            content: type === "index" ? body : "",
             regularPath: `/${item.replace(".md", ".html")}`,
             top,
             cover,
