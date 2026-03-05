@@ -268,8 +268,8 @@ export const themeConfig = {
       enable: true,
       // 倒计时日期
       data: {
-        name: "春节",
-        date: "2027-02-06",
+        name: "当前日期",
+        date: "2026-03-05",
       },
     },
     // 站点数据
