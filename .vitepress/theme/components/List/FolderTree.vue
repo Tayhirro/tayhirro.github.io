@@ -138,12 +138,19 @@ const getCategoryPosts = (category) => {
   return props.postData.filter((post) => normalizePath(post?.regularPath).startsWith(`${category}/`))
 }
 
+const isIndexFileName = (name) => {
+  if (!name) return false
+  const lower = name.toLowerCase()
+  return name.includes('索引') || lower === 'index' || lower === 'readme'
+}
+
 const findIndexFile = (category) => {
   const posts = getCategoryPosts(category)
   const candidates = new Set([
     `${category}/索引`,
     `${category}/index`,
     `${category}/README`,
+    `${category}/readme`,
     `${category}/${category.split('/').pop()}索引`,
   ])
   return posts.find((post) => {
@@ -234,7 +241,7 @@ const currentLevelData = computed(() => {
     
     if (parts.length === 1) {
       const fileName = parts[0]
-      if (fileName.includes('索引') || fileName.includes('index') || fileName === 'README') {
+      if (isIndexFileName(fileName)) {
         if (!indexes.find(i => i.regularPath === post.regularPath)) {
           indexes.unshift(post)
         }
@@ -249,7 +256,8 @@ const currentLevelData = computed(() => {
         const folderPath = `${category}/${firstFolder}`
         const folderIndex = posts.find(p => {
           const pPath = p?.regularPath?.replace(/^\//, '').replace('.html', '')
-          return pPath === folderPath + '/索引' || pPath === folderPath + '/index' || pPath === folderPath + '/README'
+          const normalized = normalizePath(pPath)
+          return normalized === `${folderPath}/索引` || normalized === `${folderPath}/index` || normalized === `${folderPath}/readme`
         })
         folders.set(firstFolder, {
           name: firstFolder,
