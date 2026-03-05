@@ -1,4 +1,4 @@
-import { h } from "vue";
+import { h, nextTick } from "vue";
 import { createPinia } from "pinia";
 import { routeChange } from "@/utils/initTools.mjs";
 import { enhanceAppWithTabs } from "vitepress-plugin-tabs/client";
@@ -18,6 +18,27 @@ pinia.use(piniaPluginPersistedstate);
 import InstantSearch from "vue-instantsearch/vue3/es";
 
 // Theme
+let mermaidPromise;
+const renderMermaid = async () => {
+  if (typeof window === "undefined") return;
+  const hasMermaidBlock = document.querySelector("pre.mermaid");
+  if (!hasMermaidBlock) return;
+  if (!mermaidPromise) {
+    mermaidPromise = import("mermaid").then((mod) => {
+      const mermaid = mod.default;
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        theme: "default",
+      });
+      return mermaid;
+    });
+  }
+  const mermaid = await mermaidPromise;
+  await nextTick();
+  await mermaid.run({ querySelector: "pre.mermaid" });
+};
+
 const Theme = {
   // extends: Theme,
   Layout: () => {
@@ -36,7 +57,13 @@ const Theme = {
     };
     router.onAfterRouteChanged = (to) => {
       routeChange("after", to);
+      void renderMermaid();
     };
+    if (typeof window !== "undefined") {
+      window.addEventListener("load", () => {
+        void renderMermaid();
+      });
+    }
   },
 };
 

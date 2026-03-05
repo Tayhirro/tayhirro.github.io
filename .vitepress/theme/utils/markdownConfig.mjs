@@ -88,6 +88,10 @@ const markdownConfig = (md, themeConfig) => {
     const token = tokens[idx];
     const lang = token.info.trim();
 
+    if (lang === "mermaid") {
+      return `<pre class="mermaid">${md.utils.escapeHtml(token.content)}</pre>`;
+    }
+
     // 处理 Obsidian admonition
     if (lang.startsWith('ad-')) {
       const type = lang.substring(3); // 取ad-之后的内容，获取类型
