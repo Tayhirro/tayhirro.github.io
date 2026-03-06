@@ -136,6 +136,18 @@ const normalizePath = (path) => {
   return value
 }
 
+const getDirPath = (path) => {
+  const normalized = normalizePath(path)
+  const index = normalized.lastIndexOf('/')
+  return index === -1 ? '' : normalized.slice(0, index)
+}
+
+const getFileName = (path) => {
+  const normalized = normalizePath(path)
+  const index = normalized.lastIndexOf('/')
+  return index === -1 ? normalized : normalized.slice(index + 1)
+}
+
 const getCategoryPosts = (category) => {
   const byCategory = props.categoriesData?.[category]?.articles
   if (Array.isArray(byCategory) && byCategory.length > 0) {
@@ -152,16 +164,15 @@ const isIndexFileName = (name) => {
 
 const findIndexFile = (category) => {
   const posts = getCategoryPosts(category)
-  const candidates = new Set([
-    `${category}/索引`,
-    `${category}/index`,
-    `${category}/README`,
-    `${category}/readme`,
-    `${category}/${category.split('/').pop()}索引`,
-  ])
+  const categoryPath = normalizePath(category)
+  const byType = posts.find((post) => {
+    const postPath = normalizePath(post?.regularPath)
+    return getDirPath(postPath) === categoryPath && post?.type === 'index'
+  })
+  if (byType) return byType
   return posts.find((post) => {
     const postPath = normalizePath(post?.regularPath)
-    return candidates.has(postPath)
+    return getDirPath(postPath) === categoryPath && isIndexFileName(getFileName(postPath))
   })
 }
 
@@ -174,6 +185,11 @@ const parseIndexContent = (indexPost, category) => {
   const seenFolders = new Set()
   const seenIndexes = new Set()
   const postByPath = new Map()
+
+  if (indexPost?.type === 'index' && indexPost?.regularPath) {
+    seenIndexes.add(indexPost.regularPath)
+    indexes.push(indexPost)
+  }
 
   props.postData.forEach((post) => {
     postByPath.set(normalizePath(post?.regularPath), post)
@@ -193,10 +209,12 @@ const parseIndexContent = (indexPost, category) => {
       const folderName = cleanLink.split('/')[0]
       if (!seenFolders.has(folderName)) {
         seenFolders.add(folderName)
+        const targetPath = normalizePath(`${category}/${cleanLink}`)
+        const targetPost = postByPath.get(targetPath)
         folders.push({
           name: folderName,
           link: `/pages/categories/${encodeCategoryRoute(`${category}/${folderName}`)}`,
-          desc: name
+          desc: targetPost?.type === 'index' ? (targetPost?.title || name) : name
         })
       }
     } else {
@@ -260,10 +278,13 @@ const currentLevelData = computed(() => {
       const firstFolder = parts[0]
       if (!folders.has(firstFolder)) {
         const folderPath = `${category}/${firstFolder}`
+        const folderPathNormalized = normalizePath(folderPath)
         const folderIndex = posts.find(p => {
-          const pPath = p?.regularPath?.replace(/^\//, '').replace('.html', '')
-          const normalized = normalizePath(pPath)
-          return normalized === `${folderPath}/索引` || normalized === `${folderPath}/index` || normalized === `${folderPath}/readme`
+          const postPath = normalizePath(p?.regularPath)
+          return getDirPath(postPath) === folderPathNormalized && p?.type === 'index'
+        }) || posts.find(p => {
+          const postPath = normalizePath(p?.regularPath)
+          return getDirPath(postPath) === folderPathNormalized && isIndexFileName(getFileName(postPath))
         })
         folders.set(firstFolder, {
           name: firstFolder,
