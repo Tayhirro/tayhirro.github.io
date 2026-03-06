@@ -9,7 +9,7 @@
       <template v-for="(crumb, index) in breadcrumbs" :key="index">
         <i class="iconfont icon-arrow-right"></i>
         <a
-          :href="`/pages/categories/${crumb.path}`"
+          :href="`/pages/categories/${encodeURIComponent(crumb.path)}`"
           :class="['crumb', { active: index === breadcrumbs.length - 1 }]"
         >
           {{ crumb.name }}
@@ -189,7 +189,7 @@ const parseIndexContent = (indexPost, category) => {
         seenFolders.add(folderName)
         folders.push({
           name: folderName,
-          link: `/pages/categories/${category}/${folderName}`,
+          link: `/pages/categories/${encodeURIComponent(`${category}/${folderName}`)}`,
           desc: name
         })
       }
@@ -261,7 +261,7 @@ const currentLevelData = computed(() => {
         })
         folders.set(firstFolder, {
           name: firstFolder,
-          link: `/pages/categories/${folderPath}`,
+          link: `/pages/categories/${encodeURIComponent(folderPath)}`,
           desc: folderIndex?.title || ''
         })
       }
