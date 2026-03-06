@@ -11,10 +11,12 @@ import Home from "@/views/Home.vue"
 import FolderTree from "@/components/List/FolderTree.vue"
 
 const { params, site, theme } = useData();
+const CATEGORY_PATH_TOKEN = '__SLASH__'
 
 const getName = (value) => {
   if (Array.isArray(value)) return value.join('/')
-  return value || ''
+  if (!value) return ''
+  return value.replaceAll(CATEGORY_PATH_TOKEN, '/')
 }
 
 const categoryName = computed(() => {

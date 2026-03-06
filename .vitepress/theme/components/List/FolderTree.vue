@@ -9,7 +9,7 @@
       <template v-for="(crumb, index) in breadcrumbs" :key="index">
         <i class="iconfont icon-arrow-right"></i>
         <a
-          :href="`/pages/categories/${encodeURIComponent(crumb.path)}`"
+          :href="`/pages/categories/${encodeCategoryRoute(crumb.path)}`"
           :class="['crumb', { active: index === breadcrumbs.length - 1 }]"
         >
           {{ crumb.name }}
@@ -80,6 +80,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vitepress'
 
 const route = useRoute()
+const CATEGORY_PATH_TOKEN = '__SLASH__'
 const props = defineProps({
   categoryName: {
     type: String,
@@ -98,10 +99,15 @@ const props = defineProps({
 const currentCategory = computed(() => {
   const match = route.path.match(/\/pages\/categories\/(.+)/)
   if (match) {
-    return decodeURIComponent(match[1])
+    return decodeURIComponent(match[1]).replaceAll(CATEGORY_PATH_TOKEN, '/')
   }
   return props.categoryName
 })
+
+const encodeCategoryRoute = (path) => {
+  if (!path) return ''
+  return encodeURIComponent(path.replaceAll('/', CATEGORY_PATH_TOKEN))
+}
 
 const formatDate = (timestamp) => {
   if (!timestamp) return ''
@@ -189,7 +195,7 @@ const parseIndexContent = (indexPost, category) => {
         seenFolders.add(folderName)
         folders.push({
           name: folderName,
-          link: `/pages/categories/${encodeURIComponent(`${category}/${folderName}`)}`,
+          link: `/pages/categories/${encodeCategoryRoute(`${category}/${folderName}`)}`,
           desc: name
         })
       }
@@ -261,7 +267,7 @@ const currentLevelData = computed(() => {
         })
         folders.set(firstFolder, {
           name: firstFolder,
-          link: `/pages/categories/${encodeURIComponent(folderPath)}`,
+          link: `/pages/categories/${encodeCategoryRoute(folderPath)}`,
           desc: folderIndex?.title || ''
         })
       }
