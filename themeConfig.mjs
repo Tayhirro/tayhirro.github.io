@@ -269,7 +269,7 @@ export const themeConfig = {
       // 倒计时日期
       data: {
         name: "当前日期",
-        date: "2026-03-05",
+        date: "now",
       },
     },
     // 站点数据

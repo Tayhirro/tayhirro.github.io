@@ -2,10 +2,10 @@
   <!-- 倒计时 -->
   <div class="count-down s-card">
     <div class="count-left">
-      <span class="text"> 距离 </span>
-      <span class="name">{{ theme.aside.countDown.data.name }}</span>
-      <span class="time"> {{ getDaysUntil(theme.aside.countDown.data.date) }} </span>
-      <span class="date">{{ theme.aside.countDown.data.date }}</span>
+      <span class="text"> {{ leftLabel }} </span>
+      <span class="name">{{ displayName }}</span>
+      <span class="time"> {{ displayTime }} </span>
+      <span class="date">{{ displayDate }}</span>
     </div>
     <div v-if="remainData" class="count-right">
       <div v-for="(item, tag, index) in remainData" :key="index" class="count-item">
@@ -31,12 +31,41 @@
 
 <script setup>
 import { getTimeRemaining, getDaysUntil } from "@/utils/timeTools";
+import dayjs from "dayjs";
 
 const { theme } = useData();
 
 // 倒计时数据
 const remainData = ref(null);
 const remainInterval = ref(null);
+
+const countDownData = computed(() => theme.value?.aside?.countDown?.data || {});
+const isCurrentDateMode = computed(
+  () => countDownData.value?.date === "now" || countDownData.value?.name === "当前日期",
+);
+
+const displayDate = computed(() => {
+  if (isCurrentDateMode.value) {
+    return dayjs().format("YYYY-MM-DD");
+  }
+  return countDownData.value?.date || "";
+});
+
+const displayName = computed(() => {
+  if (isCurrentDateMode.value) {
+    return "当前时间";
+  }
+  return countDownData.value?.name || "目标日期";
+});
+
+const displayTime = computed(() => {
+  if (isCurrentDateMode.value) {
+    return dayjs().format("HH:mm:ss");
+  }
+  return getDaysUntil(displayDate.value);
+});
+
+const leftLabel = computed(() => (isCurrentDateMode.value ? "现在是" : "距离"));
 
 // 获取倒计时数据
 const getRemainData = () => {
