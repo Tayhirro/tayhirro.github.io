@@ -60,15 +60,37 @@ const props = defineProps({
 // 每页文章数
 const postSize = theme.value.postSize;
 
+const HOME_BLOG_FOLDER = "博客";
+
+const normalizePostPath = (path) => {
+  if (typeof path !== "string") return "";
+  return decodeURIComponent(path)
+    .replace(/^\//, "")
+    .replace(/^posts\//, "")
+    .replace(/\.html$/, "");
+};
+
+const isHomeBlogPost = (post) => {
+  const postPath = normalizePostPath(post?.regularPath);
+  if (!postPath.startsWith(`${HOME_BLOG_FOLDER}/`)) return false;
+  const fileName = postPath.split("/").pop()?.toLowerCase() || "";
+  if (post?.type === "index") return false;
+  return !(fileName === "index" || fileName === "readme" || fileName.includes("索引"));
+};
+
+const baseData = computed(() => {
+  if (props.showCategories) {
+    return theme.value.categoriesData[props.showCategories]?.articles || [];
+  }
+  if (props.showTags) {
+    return theme.value.tagsData[props.showTags]?.articles || [];
+  }
+  return (theme.value.postData || []).filter(isHomeBlogPost);
+});
+
 // 列表总数量
 const allListTotal = computed(() => {
-  const data = props.showCategories
-    ? theme.value.categoriesData[props.showCategories]?.articles
-    : props.showTags
-      ? theme.value.tagsData[props.showTags]?.articles
-      : theme.value.postData;
-  // 返回数量
-  return data ? data.length : 0;
+  return baseData.value.length;
 });
 
 // 获得当前页数
@@ -87,22 +109,9 @@ const getCurrentPage = () => {
 // 根据页数计算列表数据
 const postData = computed(() => {
   const page = getCurrentPage();
-  console.log("当前页数：", page);
-  let data = null;
-  // 分类数据
-  if (props.showCategories) {
-    data = theme.value.categoriesData[props.showCategories]?.articles;
-  }
-  // 标签数据
-  else if (props.showTags) {
-    data = theme.value.tagsData[props.showTags]?.articles;
-  }
-  // 文章数据
-  else {
-    data = theme.value.postData;
-  }
+  let data = baseData.value;
   // 返回列表
-  return data ? data.slice(page * postSize, page * postSize + postSize) : [];
+  return data.slice(page * postSize, page * postSize + postSize);
 });
 
 // 恢复滚动位置
