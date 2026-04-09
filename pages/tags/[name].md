@@ -5,15 +5,24 @@ padding: false
 ---
 
 <script setup>
-import { onMounted } from "vue";
+import { computed, watch } from "vue";
 import { useData } from "vitepress"
 import Home from "@/views/Home.vue"
+import { decodeTaxonomyName } from "@/utils/taxonomy.mjs"
 
 const { params, site } = useData();
 
-onMounted(() => {
-  document.title = `标签：${params.value.name} | ${site.value.title}`;
-});
+const tagName = computed(() => decodeTaxonomyName(params.value.name))
+
+watch(
+  tagName,
+  (value) => {
+    if (value) {
+      document.title = `标签：${value} | ${site.value.title}`;
+    }
+  },
+  { immediate: true },
+)
 </script>
 
-<Home :showHeader="false" :showTags="params.name" />
+<Home :showHeader="false" :showTags="tagName" />

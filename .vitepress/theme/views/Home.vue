@@ -15,10 +15,10 @@
           :limit="postSize"
           :useParams="showCategories || showTags ? true : false"
           :routePath="
-            showCategories
-              ? `/pages/categories/${showCategories}`
-              : showTags
-                ? `/pages/tags/${showTags}`
+            normalizedCategory
+              ? createTaxonomyHref('/pages/categories', normalizedCategory)
+              : normalizedTag
+                ? createTaxonomyHref('/pages/tags', normalizedTag)
                 : ''
           "
         />
@@ -31,6 +31,7 @@
 
 <script setup>
 import { mainStore } from "@/store";
+import { createTaxonomyHref, decodeTaxonomyName } from "@/utils/taxonomy.mjs";
 
 const { theme } = useData();
 const store = mainStore();
@@ -59,8 +60,9 @@ const props = defineProps({
 
 // 每页文章数
 const postSize = theme.value.postSize;
-
 const HOME_BLOG_FOLDER = "博客";
+const normalizedCategory = computed(() => decodeTaxonomyName(props.showCategories));
+const normalizedTag = computed(() => decodeTaxonomyName(props.showTags));
 
 const normalizePostPath = (path) => {
   if (typeof path !== "string") return "";
@@ -79,11 +81,11 @@ const isHomeBlogPost = (post) => {
 };
 
 const baseData = computed(() => {
-  if (props.showCategories) {
-    return theme.value.categoriesData[props.showCategories]?.articles || [];
+  if (normalizedCategory.value) {
+    return theme.value.categoriesData[normalizedCategory.value]?.articles || [];
   }
-  if (props.showTags) {
-    return theme.value.tagsData[props.showTags]?.articles || [];
+  if (normalizedTag.value) {
+    return theme.value.tagsData[normalizedTag.value]?.articles || [];
   }
   return (theme.value.postData || []).filter(isHomeBlogPost);
 });

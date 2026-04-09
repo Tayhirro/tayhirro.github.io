@@ -14,11 +14,11 @@
       <a
         v-for="(item, key, index) in theme.categoriesData"
         :key="index"
-        :href="`/pages/categories/${key}`"
+        :href="createTaxonomyHref('/pages/categories', key)"
         class="type-item s-card"
       >
         <i class="iconfont icon-folder" />
-        <span class="name">{{ key }}</span>
+        <span class="name">{{ decodeTaxonomyName(key) }}</span>
         <span class="num">{{ item.count }}</span>
       </a>
     </div>
@@ -26,11 +26,11 @@
       <a
         v-for="(item, key, index) in theme.tagsData"
         :key="index"
-        :href="`/pages/tags/${key}`"
+        :href="createTaxonomyHref('/pages/tags', key)"
         class="type-item s-card"
       >
         <i class="iconfont icon-hashtag" />
-        <span class="name">{{ key }}</span>
+        <span class="name">{{ decodeTaxonomyName(key) }}</span>
         <span class="num">{{ item.count }}</span>
       </a>
     </div>
@@ -38,6 +38,8 @@
 </template>
 
 <script setup>
+import { createTaxonomyHref, decodeTaxonomyName } from "@/utils/taxonomy.mjs";
+
 const { theme } = useData();
 const props = defineProps({
   // 页面类型

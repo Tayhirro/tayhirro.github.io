@@ -5,31 +5,27 @@ padding: false
 ---
 
 <script setup>
-import { onMounted, computed, watch } from "vue";
+import { computed, watch } from "vue";
 import { useData } from "vitepress"
 import Home from "@/views/Home.vue"
 import FolderTree from "@/components/List/FolderTree.vue"
+import { decodeTaxonomyName } from "@/utils/taxonomy.mjs"
 
 const { params, site, theme } = useData();
-const CATEGORY_PATH_TOKEN = '__SLASH__'
-
-const getName = (value) => {
-  if (Array.isArray(value)) return value.join('/')
-  if (!value) return ''
-  return value.replaceAll(CATEGORY_PATH_TOKEN, '/')
-}
 
 const categoryName = computed(() => {
-  const rawName = getName(params?.value?.name)
-  return rawName ? decodeURIComponent(rawName) : ''
+  return decodeTaxonomyName(params.value.name)
 })
 
-onMounted(() => {
-  const name = getName(params?.value?.name)
-  if (name) {
-    document.title = `分类：${decodeURIComponent(name)} | ${site.value.title}`;
-  }
-});
+watch(
+  categoryName,
+  (value) => {
+    if (value) {
+      document.title = `分类：${value} | ${site.value.title}`;
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <div class="category-page">

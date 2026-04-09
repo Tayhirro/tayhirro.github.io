@@ -4,7 +4,7 @@
     <div class="all-type">
       <a
         v-if="currentTypeName"
-        :href="`/pages/categories/${currentTypeName}`"
+        :href="createTaxonomyHref('/pages/categories', currentTypeName)"
         class="type-item choose"
       >
         {{ currentTypeName }}
@@ -13,10 +13,10 @@
       <a
         v-for="(_, key, index) in theme.categoriesData"
         :key="index"
-        :href="`/pages/categories/${key}`"
-        :class="['type-item', { hidden: currentTypeName === key }]"
+        :href="createTaxonomyHref('/pages/categories', key)"
+        :class="['type-item', { hidden: currentTypeName === decodeTaxonomyName(key) }]"
       >
-        {{ key }}
+        {{ decodeTaxonomyName(key) }}
       </a>
     </div>
     <a href="/pages/categories" class="more-type">
@@ -26,17 +26,21 @@
   </div>
   <div v-else-if="type === 'tags'" class="type-bar s-card hover">
     <div class="all-type">
-      <a v-if="currentTypeName" :href="`/pages/tags/${currentTypeName}`" class="type-item choose">
+      <a
+        v-if="currentTypeName"
+        :href="createTaxonomyHref('/pages/tags', currentTypeName)"
+        class="type-item choose"
+      >
         {{ currentTypeName }}
         <span class="num">{{ theme.tagsData?.[currentTypeName]?.count || 0 }}</span>
       </a>
       <a
         v-for="(item, key, index) in theme.tagsData"
         :key="index"
-        :href="`/pages/tags/${key}`"
-        :class="['type-item', { hidden: currentTypeName === key }]"
+        :href="createTaxonomyHref('/pages/tags', key)"
+        :class="['type-item', { hidden: currentTypeName === decodeTaxonomyName(key) }]"
       >
-        {{ key }}
+        {{ decodeTaxonomyName(key) }}
         <span class="num">{{ item.count }}</span>
       </a>
     </div>
@@ -48,6 +52,8 @@
 </template>
 
 <script setup>
+import { createTaxonomyHref, decodeTaxonomyName } from "@/utils/taxonomy.mjs";
+
 const { theme, params } = useData();
 const props = defineProps({
   // 显示类别
@@ -59,7 +65,7 @@ const props = defineProps({
 
 // 获取当前路由路径
 const currentTypeName = computed(() => {
-  return params.value?.name || null;
+  return decodeTaxonomyName(params.value?.name) || null;
 });
 </script>
 

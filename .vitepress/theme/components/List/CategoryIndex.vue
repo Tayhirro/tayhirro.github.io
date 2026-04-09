@@ -13,7 +13,7 @@
         <a
           v-for="category in categories"
           :key="category.name"
-          :href="`/pages/categories/${category.name}`"
+          :href="category.path"
           class="category-card s-card hover"
         >
           <div class="card-icon">
@@ -33,13 +33,15 @@
 import { computed, onMounted, ref } from 'vue'
 import { useData } from 'vitepress'
 import Banner from '@/components/Banner.vue'
+import { createTaxonomyHref, decodeTaxonomyName } from '@/utils/taxonomy.mjs'
 
 const { theme } = useData()
 
 const categories = computed(() => {
   const catData = theme.value.categoriesData || {}
   return Object.entries(catData).map(([name, data]) => ({
-    name,
+    name: decodeTaxonomyName(name),
+    path: createTaxonomyHref('/pages/categories', name),
     count: data.count || 0
   })).sort((a, b) => b.count - a.count)
 })
